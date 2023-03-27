@@ -11,8 +11,6 @@ on:
   pull_request:
     # The branches below must be a subset of the branches above
     branches: [ "main" ]
-  schedule:
-    - cron: '29 14 * * 6'
 
 permissions:
   contents: read
@@ -33,7 +31,7 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: 'docker.io/library/nginx:latest'
-          # exit-code: '1'
+          exit-code: '1'
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
