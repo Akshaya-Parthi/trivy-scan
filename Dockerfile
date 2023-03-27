@@ -1,5 +1,14 @@
-FROM alpine:3.17.2
-RUN apk --no-cache add ca-certificates git
-COPY trivy /usr/local/bin/trivy
-COPY contrib/*.tpl contrib/
-ENTRYPOINT ["trivy"]
+# Use a lightweight Alpine base image
+FROM alpine:latest
+
+# Set the working directory to /app
+WORKDIR /app
+
+# Copy the current directory contents into the container at /app
+COPY . /app
+
+# Expose port 8080
+EXPOSE 8080
+
+# Define the command to run when the container starts
+CMD [ "sh", "-c", "echo 'Starting my app...'" ]
