@@ -1,0 +1,44 @@
+name: build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    permissions:
+      contents: read 
+      security-events: write 
+      actions: read 
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Build an image from Dockerfile
+        run: |
+          docker build -t docker.io/my-organization/my-app:${{ github.sha }} .
+          
+      - name: Trivy vulnerability scan for API
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+          hide-progress: false
+          format: 'sarif' 
+          output: 'results.sarif'
+
+      - name: upload Trivy scan results 
+        uses: actions/upload-artifact@v3
+        with:
+           name: trivy-api-artifact
+           path: ./results.sarif
