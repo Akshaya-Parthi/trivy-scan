@@ -1,10 +1,6 @@
-name: build
+name: Trivy for docker image scanning
 
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+on: [push]
 
 permissions:
   contents: read
