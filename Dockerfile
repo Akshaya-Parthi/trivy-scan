@@ -1,14 +1,9 @@
-# Use a lightweight Alpine base image
-FROM alpine:latest
-
-# Set the working directory to /app
+# debian.Dockerfile
+FROM python:3-slim AS build-env
+ADD . /app
 WORKDIR /app
 
-# Copy the current directory contents into the container at /app
-COPY . /app
-
-# Expose port 8080
-EXPOSE 8080
-
-# Define the command to run when the container starts
-CMD [ "sh", "-c", "echo 'Starting my app...'" ]
+FROM python:3-buster
+COPY --from=build-env /app /app
+WORKDIR /app
+CMD ["python", "hello.py", "/etc"]
