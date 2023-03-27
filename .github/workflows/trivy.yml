@@ -4,7 +4,6 @@ on:
   push:
     branches: [ "main" ]
   pull_request:
-    # The branches below must be a subset of the branches above
     branches: [ "main" ]
 jobs:
   build:
@@ -15,27 +14,16 @@ jobs:
     name: Build
     runs-on: "ubuntu-18.04"
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Build an image from Dockerfile
-        run: |
-          docker build -t docker.io/my-organization/my-app:${{ github.sha }} .
-          
-      - name: Trivy scan
-        run: |
-          docker run --rm ghcr.io/aquasecurity/trivy:latest -f json image python:slim > scan.json
-
-#       - name: Run Trivy vulnerability scanner
-#         uses: aquasecurity/trivy-action@7b7aa264d83dc58691451798b4d117d53d21edfe
-#         with:
-#           image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
-#           format: 'template'
-#           template: '@contrib/sarif.tpl'
-#           output: 'trivy-results.sarif'
-#           severity: 'CRITICAL,HIGH'
-
-#       - name: Upload Trivy scan results to GitHub Security tab
-#         uses: github/codeql-action/upload-sarif@v2
-#         with:
-#           sarif_file: 'trivy-results.sarif'
+      - name: Scan Docker image with Trivy
+        uses: aquasecurity/trivy-action@v1
+        with:
+          image-ref: docker.io/library/nginx:1.20.2
+          severity: 'CRITICAL,HIGH'
+          output: html
+          id: trivy-scan
+    
+      - name: Upload Trivy HTML report as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: trivy-report
+          path: trivy-report.html
