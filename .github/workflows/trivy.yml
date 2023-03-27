@@ -31,16 +31,16 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: 'docker.io/library/nginx:latest'
-          # exit-code: '1'
+          exit-code: '1'
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
           hide-progress: false
-          format: 'html' 
-          output: 'results.html'
+          format: 'json' 
+          output: 'results.json'
 
       - name: upload Trivy scan results for API
         uses: actions/upload-artifact@v3
         with:
            name: trivy-api-artifact
-           path: ./results.html
+           path: ./results.json
