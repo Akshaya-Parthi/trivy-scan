@@ -36,11 +36,11 @@ jobs:
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
           hide-progress: false
-          format: 'json' 
-          output: 'results.json'
+          format: 'html' 
+          output: 'results.html'
 
       - name: upload Trivy scan results for API
         uses: actions/upload-artifact@v3
         with:
            name: trivy-api-artifact
-           path: ./results.json
+           path: ./results.html
