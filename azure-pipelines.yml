@@ -1,0 +1,28 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- script: |
+    # Scan the image with Trivy and save the report as JSON
+    docker run --rm ghcr.io/aquasecurity/trivy:latest --exit-code 0 --severity HIGH,CRITICAL image python:3.4-alpine3.9 > trivy-report.json
+
+    # Convert the JSON report to HTML
+    docker run --rm ghcr.io/aquasecurity/trivy:latest --exit-code 0 --severity HIGH,CRITICAL image python:3.4-alpine3.9 > trivy-report.html
+
+    # Push the HTML report to Azure Artifacts
+    dotnet tool install --global azure-devops -v 1.1.0
+    azure-devops login --organization https://dev.azure.com/awsraja2005 --project Trivy
+    azure-devops artifacts universal publish --feed Docker --name trivy-scan-report --version $(Build.BuildNumber) --type "container-scan-report" --path trivy-report.html
+
+  displayName: 'Scan Docker image with Trivy'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    artifactName: 'TrivyScanReport'
+    pathToPublish: '$(System.DefaultWorkingDirectory)/trivy-report.json'
+    publishLocation: 'Container'
+  displayName: 'Publish Trivy scan report as build artifact'
+
