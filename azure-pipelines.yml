@@ -9,9 +9,6 @@ steps:
     # Scan the image with Trivy and save the report as JSON
     docker run --rm ghcr.io/aquasecurity/trivy:latest --exit-code 0 --severity HIGH,CRITICAL image python:3.4-alpine3.9 > trivy-report.json
 
-    # Convert the JSON report to HTML
-    docker run --rm ghcr.io/aquasecurity/trivy:latest --exit-code 0 --severity HIGH,CRITICAL image python:3.4-alpine3.9 > trivy-report.html
-
     # Push the HTML report to Azure Artifacts
     dotnet tool install --global azure-devops -v 1.1.0
     azure-devops login --organization https://dev.azure.com/awsraja2005 --project Trivy
